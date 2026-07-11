@@ -96,7 +96,6 @@ export default function DesktopProvider({ children }: { children: React.ReactNod
     } catch {
       // ignore corrupt storage
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Persist open app list whenever it changes (lightweight session save)
@@ -165,7 +164,6 @@ export default function DesktopProvider({ children }: { children: React.ReactNod
 
   const openApp = useCallback((appId: AppId, opts?: OpenOptions) => {
     return openAppInternal(appId, opts);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const closeWindow = useCallback((id: string) => {

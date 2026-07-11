@@ -70,8 +70,8 @@ export default function HomePage() {
         </Window>
 
         <p className="text-[11px] text-slate-500 max-w-sm text-center">
-          Built with Next.js 15, React 19, Tailwind, Prisma, and the Google
-          Gemini API.
+          Built with Next.js 15, React 19, Tailwind, Prisma, and the Groq
+          API.
         </p>
       </div>
     </main>

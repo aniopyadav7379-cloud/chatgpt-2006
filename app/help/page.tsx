@@ -18,7 +18,7 @@ const FAQS = [
   },
   {
     q: "What powers the AI?",
-    a: "Responses come from the Google Gemini API, connected through a Next.js API route on the server.",
+    a: "Responses come from the Groq API, connected through a Next.js API route on the server.",
   },
   {
     q: "How do I clear a conversation?",
@@ -47,7 +47,7 @@ export default function HelpPage() {
                 AI Knowledge Engine 2006 pairs an early-2000s desktop
                 aesthetic — glossy blue windows, dial-up loading screens,
                 MSN-style chat bubbles — with a genuinely current stack:
-                Next.js 15, React 19, and the Gemini API.
+                Next.js 15, React 19, and the Groq API.
               </p>
             </div>
           </section>

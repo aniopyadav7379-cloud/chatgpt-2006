@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Loader2, FileDown, Save, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import { listNotes, saveNote, newNoteId } from "@/lib/desktop/notes";
@@ -19,7 +19,8 @@ const AI_ACTIONS = [
 const MENUS = ["File", "Edit", "View", "Tools", "AI"] as const;
 
 export default function NotepadApp({ win }: { win: WindowInstance }) {
-  const noteId = (win.data?.noteId as string | undefined) ?? newNoteId();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const noteId = useMemo(() => (win.data?.noteId as string | undefined) ?? newNoteId(), []);
   const [title, setTitle] = useState("Untitled");
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);

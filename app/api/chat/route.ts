@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { generateChatReply } from "@/lib/groq";
+import { generateChatReply, type ChatTurn } from "@/lib/groq";
 import { deriveTitle } from "@/lib/utils";
 
 const bodySchema = z.object({
@@ -46,10 +46,12 @@ export async function POST(req: NextRequest) {
     let reply: string;
     try {
       reply = await generateChatReply(
-        history.map((m) => ({
-          role: m.role === "assistant" ? "assistant" : "user",
-          content: m.content,
-        }))
+        history.map(
+          (m: { role: string; content: string }): ChatTurn => ({
+            role: m.role === "assistant" ? "assistant" : "user",
+            content: m.content,
+          })
+        )
       );
     } catch (err) {
       console.error("Groq error:", err);
