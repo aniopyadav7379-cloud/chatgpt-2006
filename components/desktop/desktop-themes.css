@@ -1,0 +1,49 @@
+/* Desktop shell theme variants. Scoped under [data-desktop-theme] so the
+   rest of the app (landing/chat/history pages) is completely unaffected. */
+
+[data-desktop-theme="xp-blue"] {
+  --dt-titlebar: linear-gradient(180deg, #3b82f6 0%, #1e56d6 55%, #1544ad 100%);
+  --dt-taskbar: linear-gradient(180deg, #1c3a6e 0%, #0b1739 55%, #081029 100%);
+  --dt-accent: #38bdf8;
+  --dt-desktop-tint: rgba(15, 23, 42, 0.15);
+}
+
+[data-desktop-theme="xp-olive"] {
+  --dt-titlebar: linear-gradient(180deg, #9acb5a 0%, #6b9c3b 55%, #4f7a29 100%);
+  --dt-taskbar: linear-gradient(180deg, #4a5f2a 0%, #2f3f19 55%, #212c10 100%);
+  --dt-accent: #b7d876;
+  --dt-desktop-tint: rgba(30, 41, 10, 0.18);
+}
+
+[data-desktop-theme="xp-silver"] {
+  --dt-titlebar: linear-gradient(180deg, #a9b4c0 0%, #7c8ba0 55%, #5f6d80 100%);
+  --dt-taskbar: linear-gradient(180deg, #4b5563 0%, #2c333d 55%, #1b1f26 100%);
+  --dt-accent: #cbd5e1;
+  --dt-desktop-tint: rgba(30, 34, 40, 0.15);
+}
+
+[data-desktop-theme="classic"] {
+  --dt-titlebar: linear-gradient(180deg, #10287a 0%, #0a1e63 100%);
+  --dt-taskbar: linear-gradient(180deg, #d4d0c8 0%, #b6b2a8 100%);
+  --dt-accent: #10287a;
+  --dt-desktop-tint: rgba(0, 60, 116, 0.25);
+}
+
+[data-desktop-theme="win98"] {
+  --dt-titlebar: linear-gradient(180deg, #01098a 0%, #1084d0 100%);
+  --dt-taskbar: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
+  --dt-accent: #01098a;
+  --dt-desktop-tint: rgba(0, 128, 128, 0.35);
+}
+
+[data-desktop-theme] .xp-titlebar {
+  background: var(--dt-titlebar) !important;
+}
+
+[data-desktop-theme] .desktop-taskbar {
+  background: var(--dt-taskbar) !important;
+}
+
+[data-desktop-theme] .desktop-tint {
+  background: var(--dt-desktop-tint) !important;
+}
