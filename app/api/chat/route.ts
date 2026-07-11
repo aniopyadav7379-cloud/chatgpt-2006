@@ -5,7 +5,7 @@ import { generateChatReply } from "@/lib/gemini";
 import { deriveTitle } from "@/lib/utils";
 
 const bodySchema = z.object({
-  conversationId: z.string().optional(),
+  conversationId: z.string().nullable().optional(),
   message: z.string().min(1, "Message cannot be empty").max(4000),
 });
 
