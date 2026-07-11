@@ -90,6 +90,21 @@ export default function AnimatedBackground() {
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden bg-xp-gradient">
+      {/* Looping video backdrop — sits under everything else, dimmed so text stays legible */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover opacity-40"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+      >
+        <source src="/wallpapers/bg-video.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark wash so the video doesn't fight with UI contrast */}
+      <div className="absolute inset-0 bg-slate-950/55" />
+
       {/* Aurora mesh */}
       <div
         className="absolute inset-0 opacity-70 animate-aurora"

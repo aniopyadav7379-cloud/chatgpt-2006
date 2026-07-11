@@ -4,7 +4,7 @@ import { runAiTask, type AiTask } from "@/lib/aiTools";
 export const runtime = "nodejs";
 
 const MAX_BYTES = 8 * 1024 * 1024; // 8MB
-type FileTask = AiTask | "qa" | "extract";
+type FileTask = AiTask | "qa" | "extract" | "insights";
 
 async function extractText(file: File): Promise<string> {
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -26,7 +26,25 @@ async function extractText(file: File): Promise<string> {
     return result.value;
   }
 
-  // .txt and anything else plain-text
+  if (
+    name.endsWith(".xlsx") ||
+    name.endsWith(".xls") ||
+    file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    file.type === "application/vnd.ms-excel"
+  ) {
+    const XLSX = await import("xlsx");
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const parts: string[] = [];
+    for (const sheetName of workbook.SheetNames) {
+      const sheet = workbook.Sheets[sheetName];
+      const csv = XLSX.utils.sheet_to_csv(sheet);
+      parts.push(`Sheet: ${sheetName}\n${csv}`);
+    }
+    return parts.join("\n\n");
+  }
+
+  // .csv and .txt (and anything else) are treated as plain text — CSV is left
+  // as-is since raw CSV reads perfectly well for an LLM and needs no library.
   return buffer.toString("utf-8");
 }
 
@@ -82,6 +100,14 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `Extract the key points from this document as a short bullet list.\n\n${truncated}`,
+        },
+      ]);
+    } else if (task === "insights") {
+      const { generateChatReply } = await import("@/lib/groq");
+      result = await generateChatReply([
+        {
+          role: "user",
+          content: `The text below is CSV/spreadsheet data. Analyze it: identify the columns, row count, notable trends, outliers, and 3-5 concrete insights. Return a short summary followed by a bullet list of insights.\n\n${truncated}`,
         },
       ]);
     } else {

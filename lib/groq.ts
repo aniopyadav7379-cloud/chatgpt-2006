@@ -76,3 +76,77 @@ export async function generateChatReply(history: ChatTurn[]): Promise<string> {
   }
   return content.trim();
 }
+
+// Groq's "compound" models can call a built-in web-search tool before
+// answering, which is what powers the 🌐 web-search toggle in the chat UI.
+// Override with GROQ_SEARCH_MODEL if Groq renames/retires this one — check
+// https://console.groq.com/docs/agentic-tooling.
+const GROQ_SEARCH_MODEL = process.env.GROQ_SEARCH_MODEL || "groq/compound-beta";
+
+/**
+ * Same as generateChatReply, but routes through Groq's web-search-capable
+ * compound model so the model can pull in current information instead of
+ * relying only on training data.
+ */
+export async function generateChatReplyWithSearch(
+  history: ChatTurn[]
+): Promise<string> {
+  const messages = [
+    {
+      role: "system",
+      content: `${SYSTEM_PROMPT} You have live web search available — use it whenever the answer benefits from current information, and mention when you searched.`,
+    },
+    ...history.map((turn) => ({
+      role: turn.role === "assistant" ? "assistant" : "user",
+      content: turn.content,
+    })),
+  ];
+
+  if (!GROQ_API_KEY) {
+    throw new Error(
+      "GROQ_UNCONFIGURED: GROQ_API_KEY is not set. Add it to your .env.local file."
+    );
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${GROQ_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: GROQ_SEARCH_MODEL,
+        messages,
+        stream: false,
+      }),
+    });
+  } catch {
+    throw new Error(
+      `GROQ_UNREACHABLE: Couldn't reach Groq at ${GROQ_BASE_URL}. Check your internet connection.`
+    );
+  }
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    if (response.status === 401) {
+      throw new Error(
+        "GROQ_UNAUTHORIZED: Groq rejected the API key. Check GROQ_API_KEY in .env.local."
+      );
+    }
+    if (response.status === 404) {
+      throw new Error(
+        `GROQ_MODEL_MISSING: Search model "${GROQ_SEARCH_MODEL}" wasn't found on Groq. Check GROQ_SEARCH_MODEL, or the account may not have compound-model access yet.`
+      );
+    }
+    throw new Error(`GROQ_ERROR: Groq returned ${response.status}. ${text}`);
+  }
+
+  const data = await response.json();
+  const content: string | undefined = data?.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error("GROQ_EMPTY: Groq returned an empty response.");
+  }
+  return content.trim();
+}

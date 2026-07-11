@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { generateChatReply, type ChatTurn } from "@/lib/groq";
+import { generateChatReply, generateChatReplyWithSearch, type ChatTurn } from "@/lib/groq";
 import { deriveTitle } from "@/lib/utils";
 
 const bodySchema = z.object({
   conversationId: z.string().nullable().optional(),
   message: z.string().min(1, "Message cannot be empty").max(4000),
+  webSearch: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { message } = parsed.data;
+    const { message, webSearch } = parsed.data;
     let { conversationId } = parsed.data;
 
     // Create a new conversation if one wasn't supplied
@@ -43,16 +44,18 @@ export async function POST(req: NextRequest) {
       orderBy: { createdAt: "asc" },
     });
 
+    const turns = history.map(
+      (m: { role: string; content: string }): ChatTurn => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: m.content,
+      })
+    );
+
     let reply: string;
     try {
-      reply = await generateChatReply(
-        history.map(
-          (m: { role: string; content: string }): ChatTurn => ({
-            role: m.role === "assistant" ? "assistant" : "user",
-            content: m.content,
-          })
-        )
-      );
+      reply = webSearch
+        ? await generateChatReplyWithSearch(turns)
+        : await generateChatReply(turns);
     } catch (err) {
       console.error("Groq error:", err);
       const msg = err instanceof Error ? err.message : "";
