@@ -429,14 +429,14 @@ export default function ChatBox({
     const content = conversationAsText();
     const filename = `conversation.${format === "doc" ? "doc" : format}`;
     if (format === "txt") exportTxt(content, filename);
-    else if (format === "pdf") exportPdf(content, filename, "AI Knowledge Engine — Conversation");
-    else exportDoc(content, filename, "AI Knowledge Engine — Conversation");
+    else if (format === "pdf") exportPdf(content, filename, "Windows XP AI — Conversation");
+    else exportDoc(content, filename, "Windows XP AI — Conversation");
     toast.success(`Exported as ${format.toUpperCase()}.`);
   }
 
   return (
     <Window
-      title="AI Knowledge Engine — Conversation"
+      title="Windows XP AI — Conversation"
       icon={<Bot size={14} />}
       className="flex-1 flex flex-col min-h-0"
       bodyClassName="flex-1 flex flex-col min-h-0"
@@ -496,7 +496,7 @@ export default function ChatBox({
             <Bot size={32} className="text-sky-300" />
             <p className="text-[13px] text-slate-300 max-w-xs">
               Ask anything, or drop in a PDF, image, spreadsheet, or your
-              voice. Your AI Knowledge Engine is online and ready to help —
+              voice. Your Windows XP AI is online and ready to help —
               just like it&apos;s 2006, but faster.
             </p>
           </div>

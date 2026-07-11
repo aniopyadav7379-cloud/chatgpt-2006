@@ -3,7 +3,7 @@
 import { Info, Keyboard, MessageCircleQuestion } from "lucide-react";
 
 const FAQS = [
-  { q: "What is this desktop?", a: "A Windows XP-styled shell around AI Knowledge Engine 2006 — every icon opens a small AI-powered app instead of a real Windows program." },
+  { q: "What is this desktop?", a: "A Windows XP-styled shell around Windows XP AI — every icon opens a small AI-powered app instead of a real Windows program." },
   { q: "Where did my chats go?", a: "Nowhere — open Windows Intelligence (the AI Assistant) or Conversation History to pick up any thread." },
   { q: "How do I move windows?", a: "Drag the title bar. Drag the bottom-right corner to resize. Double-click the title bar to maximize." },
   { q: "Are my notes saved?", a: "AI Notepad saves to this browser's local storage and shows up in My Documents. Export to TXT, DOC, or PDF to keep a copy elsewhere." },

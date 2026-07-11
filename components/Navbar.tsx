@@ -22,7 +22,7 @@ export default function Navbar() {
             <Sparkles size={14} className="text-white" />
           </span>
           <span className="font-bold text-[13px] tracking-wide text-slate-100 group-hover:text-sky-300 transition-colors">
-            AI Knowledge Engine <span className="text-sky-300">2006</span>
+            Windows XP AI <span className="text-sky-300">2006</span>
           </span>
         </Link>
 

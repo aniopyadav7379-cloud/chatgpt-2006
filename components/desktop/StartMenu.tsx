@@ -36,7 +36,7 @@ export default function StartMenu({
     >
       <div className="px-4 py-3 bg-titlebar-gradient flex items-center gap-2">
         <Sparkles size={16} className="text-white" />
-        <span className="text-[13px] font-bold text-white">AI Knowledge Engine 2006</span>
+        <span className="text-[13px] font-bold text-white">Windows XP AI</span>
       </div>
       <div className="max-h-[60vh] overflow-y-auto py-1.5">
         {START_MENU_ORDER.map((id) => (

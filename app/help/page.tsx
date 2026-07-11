@@ -6,7 +6,7 @@ import Window from "@/components/Window";
 const FAQS = [
   {
     q: "What is this?",
-    a: "AI Knowledge Engine 2006 is an AI chat app with a Windows XP-era look and modern engineering underneath. Ask it anything, the same way you'd use any AI assistant.",
+    a: "Windows XP AI is an AI chat app with a Windows XP-era look and modern engineering underneath. Ask it anything, the same way you'd use any AI assistant.",
   },
   {
     q: "Is my chat history saved?",
@@ -44,7 +44,7 @@ export default function HelpPage() {
                 About this app
               </h2>
               <p className="text-[12.5px] text-slate-300 mt-1 leading-relaxed">
-                AI Knowledge Engine 2006 pairs an early-2000s desktop
+                Windows XP AI pairs an early-2000s desktop
                 aesthetic — glossy blue windows, dial-up loading screens,
                 MSN-style chat bubbles — with a genuinely current stack:
                 Next.js 15, React 19, and the Groq API.

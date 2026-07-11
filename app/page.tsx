@@ -31,7 +31,7 @@ export default function HomePage() {
             Est. 2006 · Rebuilt 2026
           </span>
           <h1 className="text-3xl sm:text-5xl font-bold text-white tracking-tight drop-shadow-lg">
-            AI Knowledge Engine <span className="text-sky-300">2006</span>
+            Windows XP AI <span className="text-sky-300">2006</span>
           </h1>
           <p className="text-slate-300 text-sm sm:text-base max-w-lg mx-auto">
             The nostalgic dial-up era, reimagined with a modern engine under

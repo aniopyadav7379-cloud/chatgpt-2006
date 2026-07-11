@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Wifi } from "lucide-react";
 
 const STEPS = [
-  "Dialing AI Knowledge Engine...",
+  "Dialing Windows XP AI...",
   "Negotiating handshake...",
   "Authenticating session...",
   "Establishing secure link...",

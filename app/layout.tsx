@@ -3,7 +3,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ChatGPT 2006 — AI Knowledge Engine",
+  title: "ChatGPT 2006 — Windows XP AI",
   description:
     "A Windows XP–styled AI chat experience. 2006 nostalgia, 2026 engineering.",
   icons: {

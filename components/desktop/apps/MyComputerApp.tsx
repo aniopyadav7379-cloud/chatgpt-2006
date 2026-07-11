@@ -16,7 +16,7 @@ export default function MyComputerApp() {
     <div className="flex-1 min-h-0 overflow-y-auto p-5 bg-white/[0.03]">
       <div className="flex items-center gap-2 mb-4 text-slate-200">
         <Bot size={16} className="text-sky-300" />
-        <p className="text-[12.5px]">System status: AI Knowledge Engine 2006 — online</p>
+        <p className="text-[12.5px]">System status: Windows XP AI — online</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {DRIVES.map((d) => (
