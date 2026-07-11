@@ -3,7 +3,10 @@ import { runAiTask, type AiTask } from "@/lib/aiTools";
 
 export const runtime = "nodejs";
 
-const MAX_BYTES = 8 * 1024 * 1024; // 8MB
+// Vercel's Node.js serverless functions hard-cap request bodies around 4.5MB
+// — anything bigger gets rejected with a platform-level 413 before this route
+// even runs. Stay comfortably under that (multipart form overhead included).
+const MAX_BYTES = 4 * 1024 * 1024; // 4MB
 type FileTask = AiTask | "qa" | "extract" | "insights";
 
 async function extractText(file: File): Promise<string> {

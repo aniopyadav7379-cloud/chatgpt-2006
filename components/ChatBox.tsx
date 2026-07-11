@@ -212,6 +212,39 @@ export default function ChatBox({
     }
   }
 
+  // Platform-level rejections (e.g. a 413 from the hosting provider's body-size
+  // limit) don't return our JSON error shape — they return plain text/HTML, so
+  // res.json() throws and the real reason gets masked as "connection lost".
+  // This reads the response defensively and always returns a sensible message.
+  async function readResultOrError(
+    res: Response
+  ): Promise<{ ok: true; data: { result: string } } | { ok: false; message: string }> {
+    let parsed: { result?: string; error?: string } | null = null;
+    try {
+      parsed = await res.json();
+    } catch {
+      parsed = null;
+    }
+
+    if (res.ok && parsed?.result) {
+      return { ok: true, data: { result: parsed.result } };
+    }
+
+    if (parsed?.error) {
+      return { ok: false, message: parsed.error };
+    }
+    if (res.status === 413) {
+      return {
+        ok: false,
+        message: "That file is too large for the server to accept. Try something under 4MB.",
+      };
+    }
+    if (res.status === 502 || res.status === 504) {
+      return { ok: false, message: "The AI engine took too long to respond. Try a shorter/smaller file." };
+    }
+    return { ok: false, message: `Something went wrong (HTTP ${res.status}).` };
+  }
+
   // ---------- 📎📄  Document upload (PDF / DOCX / TXT / MD / CSV / XLSX) ----------
   async function handleDocFile(file: File) {
     const lower = file.name.toLowerCase();
@@ -232,23 +265,23 @@ export default function ChatBox({
       form.append("file", file);
       form.append("task", task);
       const res = await fetch("/api/file-analyze", { method: "POST", body: form });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error ?? "Couldn't read that file.");
+      const outcome = await readResultOrError(res);
+      if (!outcome.ok) {
+        toast.error(outcome.message);
         return;
       }
       const assistantMsg: ChatMessage = {
         id: `temp-doc-ai-${Date.now()}`,
         role: "assistant",
-        content: data.result,
+        content: outcome.data.result,
         createdAt: new Date().toISOString(),
       };
       setMessages((m) => [...m, assistantMsg]);
       setAnimatingId(assistantMsg.id);
-      speak(data.result);
-      persistTurn(userChip.content, data.result);
+      speak(outcome.data.result);
+      persistTurn(userChip.content, outcome.data.result);
     } catch {
-      toast.error("Connection lost while analyzing the file.");
+      toast.error("Network error while uploading the file. Check your connection and try again.");
     } finally {
       setBusyLabel(null);
     }
@@ -278,23 +311,23 @@ export default function ChatBox({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task: "describe", image: dataUrl }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error ?? "Couldn't analyze that image.");
+      const outcome = await readResultOrError(res);
+      if (!outcome.ok) {
+        toast.error(outcome.message);
         return;
       }
       const assistantMsg: ChatMessage = {
         id: `temp-img-ai-${Date.now()}`,
         role: "assistant",
-        content: data.result,
+        content: outcome.data.result,
         createdAt: new Date().toISOString(),
       };
       setMessages((m) => [...m, assistantMsg]);
       setAnimatingId(assistantMsg.id);
-      speak(data.result);
-      persistTurn(userChip.content, data.result);
+      speak(outcome.data.result);
+      persistTurn(userChip.content, outcome.data.result);
     } catch {
-      toast.error("Connection lost while analyzing the image.");
+      toast.error("Network error while uploading the image. Check your connection and try again.");
     } finally {
       setBusyLabel(null);
     }
@@ -309,8 +342,8 @@ export default function ChatBox({
       toast.error("Supported: PDF, DOCX, TXT, MD, CSV, XLSX.");
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("File is too large (8MB max).");
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("File is too large (4MB max — server request limit).");
       return;
     }
     handleDocFile(file);
@@ -324,12 +357,16 @@ export default function ChatBox({
       toast.error("Supported: JPG, PNG, WEBP.");
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("Image is too large (8MB max).");
+    // Images go over the wire as base64 JSON, which inflates size by ~33% —
+    // cap the raw file lower than docs so the encoded payload still fits
+    // under the server's request-body limit.
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error("Image is too large (3MB max — server request limit).");
       return;
     }
     handleImageFile(file);
   }
+
 
   // ---------- 🎤  Voice recorder (Web Speech API: speech → text) ----------
   function toggleRecording() {
