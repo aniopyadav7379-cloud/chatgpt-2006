@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { generateChatReply } from "@/lib/ollama";
+import { generateChatReply } from "@/lib/groq";
 import { deriveTitle } from "@/lib/utils";
 
 const bodySchema = z.object({
@@ -52,16 +52,19 @@ export async function POST(req: NextRequest) {
         }))
       );
     } catch (err) {
-      console.error("Ollama error:", err);
+      console.error("Groq error:", err);
       const msg = err instanceof Error ? err.message : "";
       let fallback = "Connection to the AI engine dropped. Please try again in a moment.";
-      if (msg.includes("OLLAMA_UNREACHABLE")) {
-        fallback =
-          "Can't reach Ollama on this machine. Install it from ollama.com, run \"ollama serve\", and make sure a model is pulled.";
-      } else if (msg.includes("OLLAMA_MODEL_MISSING")) {
-        fallback = msg.replace("OLLAMA_MODEL_MISSING: ", "");
-      } else if (msg.includes("OLLAMA_ERROR") || msg.includes("OLLAMA_EMPTY")) {
-        fallback = "Ollama responded with an error. Check the terminal running Ollama for details.";
+      if (msg.includes("GROQ_UNCONFIGURED")) {
+        fallback = "Groq API key isn't configured. Set GROQ_API_KEY in .env.local.";
+      } else if (msg.includes("GROQ_UNREACHABLE")) {
+        fallback = "Can't reach Groq right now. Check your internet connection and try again.";
+      } else if (msg.includes("GROQ_UNAUTHORIZED")) {
+        fallback = "Groq rejected the API key. Check GROQ_API_KEY in .env.local.";
+      } else if (msg.includes("GROQ_MODEL_MISSING")) {
+        fallback = msg.replace("GROQ_MODEL_MISSING: ", "");
+      } else if (msg.includes("GROQ_ERROR") || msg.includes("GROQ_EMPTY")) {
+        fallback = "Groq responded with an error. Please try again shortly.";
       }
       return NextResponse.json(
         { error: fallback, conversationId },
