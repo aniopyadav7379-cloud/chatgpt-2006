@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { generateChatReply } from "@/lib/gemini";
+import { generateChatReply } from "@/lib/ollama";
 import { deriveTitle } from "@/lib/utils";
 
 const bodySchema = z.object({
@@ -52,18 +52,16 @@ export async function POST(req: NextRequest) {
         }))
       );
     } catch (err) {
-      console.error("Gemini error:", err);
+      console.error("Ollama error:", err);
       const msg = err instanceof Error ? err.message : "";
       let fallback = "Connection to the AI engine dropped. Please try again in a moment.";
-      if (msg.includes("GEMINI_API_KEY")) {
+      if (msg.includes("OLLAMA_UNREACHABLE")) {
         fallback =
-          "The AI engine isn't configured yet — add a GEMINI_API_KEY to your .env file to bring it online.";
-      } else if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED")) {
-        fallback =
-          "Your Gemini API key has hit its quota (this project shows a free-tier limit of 0 requests). Generate a fresh key at aistudio.google.com/apikey, or enable billing on the current project, then try again.";
-      } else if (msg.includes("API key not valid") || msg.includes("401") || msg.includes("403")) {
-        fallback =
-          "Your Gemini API key was rejected. Double-check GEMINI_API_KEY in your .env file.";
+          "Can't reach Ollama on this machine. Install it from ollama.com, run \"ollama serve\", and make sure a model is pulled.";
+      } else if (msg.includes("OLLAMA_MODEL_MISSING")) {
+        fallback = msg.replace("OLLAMA_MODEL_MISSING: ", "");
+      } else if (msg.includes("OLLAMA_ERROR") || msg.includes("OLLAMA_EMPTY")) {
+        fallback = "Ollama responded with an error. Check the terminal running Ollama for details.";
       }
       return NextResponse.json(
         { error: fallback, conversationId },

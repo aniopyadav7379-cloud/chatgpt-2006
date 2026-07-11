@@ -12,7 +12,6 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@google/genai": "^0.15.0",
     "@prisma/client": "^6.3.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.15.0",
